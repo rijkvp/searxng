@@ -23,7 +23,7 @@ Volume:
 EOF
 }
 
-export DEFAULT_BIND_ADDRESS="0.0.0.0:8080"
+export DEFAULT_BIND_ADDRESS="0.0.0.0:80"
 export BIND_ADDRESS="${BIND_ADDRESS:-${DEFAULT_BIND_ADDRESS}}"
 
 # Parse command line
