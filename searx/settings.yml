@@ -53,7 +53,7 @@ search:
 server:
   # If you change port, bind_address or base_url don't forget to rebuild
   # instance's enviroment (make buildenv)
-  port: 8888
+  port: 80
   bind_address: "127.0.0.1"
   base_url: false  # Possible values: false or "https://example.org/location".
   limiter: false  # rate limit the number of request on the instance, block some bots
@@ -1331,7 +1331,7 @@ engines:
   #   engine: searx_engine
   #   shortcut: se
   #   instance_urls :
-  #       - http://127.0.0.1:8888/
+  #       - http://127.0.0.1:80/
   #       - ...
   #   disabled: true
 
