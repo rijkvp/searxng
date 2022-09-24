@@ -12,7 +12,6 @@ import os
 import sys
 import base64
 
-from datetime import datetime, timedelta
 from timeit import default_timer
 from html import escape
 from io import StringIO
@@ -45,7 +44,6 @@ from flask.json import jsonify
 from flask_babel import (
     Babel,
     gettext,
-    format_date,
     format_decimal,
 )
 
@@ -79,6 +77,7 @@ from searx.webutils import (
     is_hmac_of,
     is_flask_run_cmdline,
     group_engines_in_tab,
+    searxng_l10n_timespan,
 )
 from searx.webadapter import (
     get_search_query_from_webapp,
@@ -145,7 +144,7 @@ result_templates = get_result_templates(templates_path)
 
 STATS_SORT_PARAMETERS = {
     'name': (False, 'name', ''),
-    'score': (True, 'score', 0),
+    'score': (True, 'score_per_result', 0),
     'result_count': (True, 'result_count', 0),
     'time': (False, 'total', 0),
     'reliability': (False, 'reliability', 100),
@@ -450,6 +449,7 @@ def render(template_name: str, **kwargs):
     kwargs['instance_name'] = get_setting('general.instance_name')
     kwargs['searx_version'] = VERSION_STRING
     kwargs['searx_git_url'] = GIT_URL
+    kwargs['enable_metrics'] = get_setting('general.enable_metrics')
     kwargs['get_setting'] = get_setting
     kwargs['get_pretty_url'] = get_pretty_url
 
@@ -464,7 +464,9 @@ def render(template_name: str, **kwargs):
     kwargs['image_proxify'] = image_proxify
     kwargs['proxify'] = morty_proxify if settings['result_proxy']['url'] is not None else None
     kwargs['proxify_results'] = settings['result_proxy']['proxify_results']
+    kwargs['cache_url'] = settings['ui']['cache_url']
     kwargs['get_result_template'] = get_result_template
+    kwargs['doi_resolver'] = get_doi_resolver(request.preferences)
     kwargs['opensearch_url'] = (
         url_for('opensearch')
         + '?'
@@ -716,25 +718,13 @@ def search():
         if 'url' in result:
             result['pretty_url'] = prettify_url(result['url'])
 
-        # TODO, check if timezone is calculated right  # pylint: disable=fixme
         if result.get('publishedDate'):  # do not try to get a date from an empty string or a None type
             try:  # test if publishedDate >= 1900 (datetime module bug)
                 result['pubdate'] = result['publishedDate'].strftime('%Y-%m-%d %H:%M:%S%z')
             except ValueError:
                 result['publishedDate'] = None
             else:
-                if result['publishedDate'].replace(tzinfo=None) >= datetime.now() - timedelta(days=1):
-                    timedifference = datetime.now() - result['publishedDate'].replace(tzinfo=None)
-                    minutes = int((timedifference.seconds / 60) % 60)
-                    hours = int(timedifference.seconds / 60 / 60)
-                    if hours == 0:
-                        result['publishedDate'] = gettext('{minutes} minute(s) ago').format(minutes=minutes)
-                    else:
-                        result['publishedDate'] = gettext('{hours} hour(s), {minutes} minute(s) ago').format(
-                            hours=hours, minutes=minutes
-                        )
-                else:
-                    result['publishedDate'] = format_date(result['publishedDate'])
+                result['publishedDate'] = searxng_l10n_timespan(result['publishedDate'])
 
         # set result['open_group'] = True when the template changes from the previous result
         # set result['close_group'] = True when the template changes on the next result

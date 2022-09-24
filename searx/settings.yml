@@ -23,7 +23,7 @@ brand:
 search:
   # Filter results. 0: None, 1: Moderate, 2: Strict
   safe_search: 0
-  # Existing autocomplete backends: "dbpedia", "duckduckgo", "google",
+  # Existing autocomplete backends: "dbpedia", "duckduckgo", "google", "yandex",
   # "seznam", "startpage", "swisscows", "qwant", "wikipedia" - leave blank to turn it off
   # by default.
   autocomplete: ""
@@ -95,6 +95,8 @@ ui:
   default_theme: simple
   # center the results ?
   center_alignment: false
+  # URL prefix of the internet archive, don't forgett trailing slash (if needed).
+  # cache_url: "https://webcache.googleusercontent.com/search?q=cache:"
   # Default interface locale - leave blank to detect from browser information or
   # use codes from the 'locales' config section
   default_locale: ""
@@ -317,7 +319,6 @@ engines:
   - name: arxiv
     engine: arxiv
     shortcut: arx
-    categories: science
     timeout: 4.0
 
   # tmp suspended:  dh key too small
@@ -409,23 +410,10 @@ engines:
   #   api_key: 'unset'
 
   - name: crossref
-    engine: json_engine
-    paging: true
-    search_url: https://search.crossref.org/dois?q={query}&page={pageno}
-    url_query: doi
-    title_query: title
-    title_html_to_text: true
-    content_query: fullCitation
-    content_html_to_text: true
-    categories: science
+    engine: crossref
     shortcut: cr
-    about:
-      website: https://www.crossref.org/
-      wikidata_id: Q5188229
-      official_api_documentation: https://github.com/CrossRef/rest-api-doc
-      use_official_api: false
-      require_api_key: false
-      results: JSON
+    timeout: 30
+    disabled: true
 
   - name: yep
     engine: json_engine
@@ -549,6 +537,11 @@ engines:
     engine: duckduckgo_images
     shortcut: ddi
     timeout: 3.0
+    disabled: true
+
+  - name: duckduckgo weather
+    engine: duckduckgo_weather
+    shortcut: ddw
     disabled: true
 
   - name: apple maps
@@ -1061,7 +1054,7 @@ engines:
     title_query: metadata/oaf:entity/oaf:result/title/$
     content_query: metadata/oaf:entity/oaf:result/description/$
     content_html_to_text: true
-    categories: science
+    categories: "science"
     shortcut: oad
     timeout: 5.0
     about:
@@ -1191,7 +1184,6 @@ engines:
   - name: pubmed
     engine: pubmed
     shortcut: pub
-    categories: science
     timeout: 3.0
 
   - name: pypi
@@ -1339,7 +1331,6 @@ engines:
     engine: semantic_scholar
     disabled: true
     shortcut: se
-    categories: science
 
   # Spotify needs API credentials
   # - name: spotify
@@ -1365,8 +1356,7 @@ engines:
   #   # working API key, for test & debug: "a69685087d07eca9f13db62f65b8f601"
   #   api_key: 'unset'
   #   shortcut: springer
-  #   categories: science
-  #   timeout: 6.0
+  #   timeout: 15.0
 
   - name: startpage
     engine: startpage
@@ -1684,6 +1674,15 @@ engines:
     engine: seznam
     disabled: true
 
+  # - name: deepl
+  #   engine: deepl
+  #   shortcut: dpl
+  #   # You can use the engine using the official stable API, but you need an API key
+  #   # See: https://www.deepl.com/pro-api?cta=header-pro-api
+  #   api_key: ''  # required!
+  #   timeout: 5.0
+  #   disabled: true
+
   - name: mojeek
     shortcut: mjk
     engine: xpath
@@ -1799,6 +1798,7 @@ engines:
     url_xpath: //div[@class="upper-synonyms"]/a/@href
     content_xpath: //div[@class="synonyms-list-group"]
     title_xpath: //div[@class="upper-synonyms"]/a
+    no_result_for_http_status: [404]
     about:
       website: https://www.woxikon.de/
       wikidata_id:  # No Wikidata ID
@@ -1834,6 +1834,11 @@ engines:
       results: HTML
       language: fr
 
+  - name: wttr.in
+    engine: wttr
+    shortcut: wttr
+    timeout: 9.0
+
   - name: brave
     shortcut: brave
     engine: xpath
@@ -1853,6 +1858,8 @@ engines:
       year: 'py'
     categories: [general, web]
     disabled: true
+    headers:
+      Accept-Encoding: gzip, deflate
     about:
       website: https://brave.com/search/
       wikidata_id: Q107355971
