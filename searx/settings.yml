@@ -52,6 +52,11 @@ search:
 
 server:
   # If you change port, bind_address or base_url don't forget to rebuild
+<<<<<<< HEAD
+=======
+  # instance's environment (make buildenv)
+  port: 8888
+>>>>>>> searxng-master
   # instance's enviroment (make buildenv)
   port: 80
   bind_address: "127.0.0.1"
@@ -135,7 +140,7 @@ outgoing:
   request_timeout: 3.0
   # the maximum timeout in seconds
   # max_request_timeout: 10.0
-  # suffix of searx_useragent, could contain informations like an email address
+  # suffix of searx_useragent, could contain information like an email address
   # to the administrator
   useragent_suffix: ""
   # The maximum number of concurrent connections that may be established.
@@ -145,6 +150,11 @@ outgoing:
   pool_maxsize: 20
   # See https://www.python-httpx.org/http2/
   enable_http2: true
+  # uncomment below section if you want to use a custom server certificate
+  # see https://www.python-httpx.org/advanced/#changing-the-verification-defaults
+  # and https://www.python-httpx.org/compatibility/#ssl-configuration
+  #  verify: ~/.mitmproxy/mitmproxy-ca-cert.cer
+  #
   # uncomment below section if you want to use a proxyq see: SOCKS proxies
   #   https://2.python-requests.org/en/latest/user/advanced/#proxies
   # are also supported: see
@@ -183,7 +193,7 @@ outgoing:
 #   # these plugins are enabled if nothing is configured ..
 #   - 'Hash plugin'
 #   - 'Search on category select'
-#   - 'Self Informations'
+#   - 'Self Information'
 #   - 'Tracker URL remover'
 #   - 'Ahmia blacklist'  # activation depends on outgoing.using_tor_proxy
 #   # these plugins are disabled if nothing is configured ..
@@ -2032,10 +2042,7 @@ doi_resolvers:
   doi.org: 'https://doi.org/'
   doai.io: 'https://dissem.in/'
   sci-hub.se: 'https://sci-hub.se/'
-  sci-hub.do: 'https://sci-hub.do/'
-  scihubtw.tw: 'https://scihubtw.tw/'
   sci-hub.st: 'https://sci-hub.st/'
-  sci-hub.bar: 'https://sci-hub.bar/'
-  sci-hub.it.nf: 'https://sci-hub.it.nf/'
+  sci-hub.ru: 'https://sci-hub.ru/'
 
 default_doi_resolver: 'oadoi.org'
